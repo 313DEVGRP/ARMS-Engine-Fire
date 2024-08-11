@@ -231,7 +231,7 @@ public class 이슈_스케쥴_서비스_프로세스 implements 이슈_스케쥴
 
         List<SearchHit<지라이슈_엔티티>> 업데이트_데이터_목록 = new ArrayList<SearchHit<지라이슈_엔티티>>();
 
-        ES_서브테크_이슈링크_목록.stream().map(서브테스크_이슈링크 ->{
+        ES_서브테크_이슈링크_목록.forEach(서브테스크_이슈링크 -> {
 
             String ES_이슈_키 = 서브테스크_이슈링크.getContent().getKey();
 
@@ -245,9 +245,7 @@ public class 이슈_스케쥴_서비스_프로세스 implements 이슈_스케쥴
                 업데이트_데이터_목록.add(서브테스크_이슈링크);
 
             }
-
-            return 서브테스크_이슈링크;
-        }).collect(toList());
+        });
 
         int 업데이트된_개수 = (int) 업데이트_데이터_목록.parallelStream()
                 .filter(도큐먼트_데이터 -> {

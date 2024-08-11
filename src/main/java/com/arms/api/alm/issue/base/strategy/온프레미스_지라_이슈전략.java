@@ -271,15 +271,16 @@ public class 온프레미스_지라_이슈전략 implements 이슈전략 {
                 결과.put("success", false);
                 결과.put("message", "변경할 이슈 상태가 존재하지 않습니다.");
             }
-
-            return 결과;
-
         }
         catch (Exception e) {
             String 에러로그 = 에러로그_유틸.예외로그출력_및_반환(e, this.getClass().getName(),
                     "온프레미스 지라(" + 서버정보.getUri() + ") :: 이슈 키(" + 이슈_키_또는_아이디 + ") :: 상태 아이디(" + 상태_아이디 + ") :: 전환 아이디(" + 이슈전환_아이디 + ") :: 이슈_상태_변경하기에 실패하였습니다.");
-            throw new IllegalArgumentException(에러코드.이슈전환_오류.getErrorMsg() + " :: " + 에러로그);
+
+            결과.put("success", false);
+            결과.put("message", 에러로그);
         }
+
+        return 결과;
     }
 
     public String 이슈전환_아이디_조회하기(서버정보_데이터 서버정보, String 이슈_키_또는_아이디, String 상태_아이디) {
