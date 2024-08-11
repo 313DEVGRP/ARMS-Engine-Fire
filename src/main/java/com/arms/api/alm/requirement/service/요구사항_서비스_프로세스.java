@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -58,28 +59,31 @@ public class 요구사항_서비스_프로세스 implements 요구사항_서비�
         // 하위 이슈 및 연결 이슈 조회
         요구사항_목록.parallelStream()
                 .forEach(요구사항 -> {
-                    EsQuery esQuery1
+                    EsQuery 하위이슈_조회쿼리
                             = new EsQueryBuilder()
                             .bool(
                                     new TermQueryMust("parentReqKey", 요구사항.getKey())
                             );
-                    모든_이슈_목록.addAll(지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), esQuery1)));
+                    모든_이슈_목록.addAll(지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), 하위이슈_조회쿼리)));
 
                     // linkedIssues 필드가 있는 경우
                     if (ArrayUtils.isNotEmpty(요구사항.getLinkedIssues())) {
-                        for (String 연결이슈_아이디 : 요구사항.getLinkedIssues()) {
-                            EsQuery esQuery2
-                                    = new EsQueryBuilder()
-                                    .bool(
-                                            new TermQueryMust("id", 연결이슈_아이디)
-                                    );
-                            지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), esQuery2)).stream()
-                                    .findFirst()
-                                    .ifPresent(연결이슈 -> {
-                                        연결이슈.setEtc(요구사항.getKey());
-                                        모든_이슈_목록.add(연결이슈);
-                                    });
-                        }
+
+                        List<String> linkedIssues = List.of(요구사항.getLinkedIssues());
+                        EsQuery 연결이슈_조회쿼리 = new EsQueryBuilder()
+                                .bool(
+                                        new TermsQueryFilter("id", linkedIssues)
+                                );
+
+                        모든_이슈_목록.addAll(
+                                지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), 연결이슈_조회쿼리)).stream()
+                                        .map(연결이슈 -> {
+                                            연결이슈.setEtc(요구사항.getKey());
+                                            return 연결이슈;
+                                        })
+                                        .collect(Collectors.toList())
+                        );
+
                     }
                 });
 
