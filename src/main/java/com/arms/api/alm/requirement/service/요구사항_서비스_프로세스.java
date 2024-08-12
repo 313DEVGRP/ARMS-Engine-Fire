@@ -56,15 +56,22 @@ public class 요구사항_서비스_프로세스 implements 요구사항_서비�
         List<지라이슈_엔티티> 요구사항_목록 = 지라이슈_조회(기본_쿼리_생성기.기본검색(지라이슈_일반_집계_요청, esQuery));
         모든_이슈_목록.addAll(요구사항_목록);
 
-        // 하위 이슈 및 연결 이슈 조회
+        // 하위 이슈 조회
+        List<String> parentReqKeys = 요구사항_목록.stream()
+                .map(지라이슈_엔티티::getKey)
+                .collect(Collectors.toList());
+
+        if (!parentReqKeys.isEmpty()) {
+            EsQuery 하위이슈_조회쿼리 = new EsQueryBuilder()
+                    .bool(
+                            new TermsQueryFilter("parentReqKey", parentReqKeys)
+                    );
+            모든_이슈_목록.addAll(지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), 하위이슈_조회쿼리)));
+        }
+
+        // 연결 이슈 조회
         요구사항_목록.parallelStream()
                 .forEach(요구사항 -> {
-                    EsQuery 하위이슈_조회쿼리
-                            = new EsQueryBuilder()
-                            .bool(
-                                    new TermQueryMust("parentReqKey", 요구사항.getKey())
-                            );
-                    모든_이슈_목록.addAll(지라이슈_조회(기본_쿼리_생성기.기본검색(new 기본_검색_요청(), 하위이슈_조회쿼리)));
 
                     // linkedIssues 필드가 있는 경우
                     if (ArrayUtils.isNotEmpty(요구사항.getLinkedIssues())) {
