@@ -64,7 +64,7 @@ public class 검색_컨트롤러 {
     }
 
 
-    @GetMapping("/log-aggs-top5/with-date")
+    @GetMapping("/log/aggs-top5")
     public ResponseEntity<버킷_집계_결과_목록_합계> 검색엔진_플루언트디_로그네임_집계_top5(@RequestParam("search_string") String 검색어,
                                                                   @RequestParam(value = "from",required = false) String 시작_날짜,
                                                                   @RequestParam(value = "to",  required = false) String 끝_날짜) {
