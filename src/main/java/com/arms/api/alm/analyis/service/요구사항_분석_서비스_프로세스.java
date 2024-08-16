@@ -185,19 +185,28 @@ public class 요구사항_분석_서비스_프로세스 implements 요구사항_
                         LinkedHashMap::new
                 ));
 
-        // 3. 검색 데이터에 누적 데이터를 더해준다.
-        for (요구사항_지라이슈상태_주별_집계 monthlyAggregation : 검색결과.values()) {
-            totalIssues += monthlyAggregation.getTotalIssues();
-            totalRequirements += monthlyAggregation.getTotalRequirements();
-            monthlyAggregation.setTotalIssues(totalIssues);
-            monthlyAggregation.setTotalRequirements(totalRequirements);
+        // 3-a. 최근 1 month 데이터가 없는 경우, 누적 데이터를 응답
+        if(검색결과.isEmpty()) {
+            요구사항_지라이슈상태_주별_집계 defaultAggregation = new 요구사항_지라이슈상태_주별_집계();
+            defaultAggregation.setTotalIssues(totalIssues);
+            defaultAggregation.setTotalRequirements(totalRequirements);
+            defaultAggregation.setStatuses(new HashMap<>(totalStatuses));
+            검색결과.put("최근 한 달 간의 데이터가 존재하지 않아 누적 데이터를 표시합니다.", defaultAggregation);
+        } else {
+            // 3-b. 검색 데이터에 누적 데이터를 더해준다.
+            for(요구사항_지라이슈상태_주별_집계 monthlyAggregation : 검색결과.values()) {
+                totalIssues += monthlyAggregation.getTotalIssues();
+                totalRequirements += monthlyAggregation.getTotalRequirements();
+                monthlyAggregation.setTotalIssues(totalIssues);
+                monthlyAggregation.setTotalRequirements(totalRequirements);
 
-            Map<String, Long> currentStatuses = monthlyAggregation.getStatuses();
-            for (Map.Entry<String, Long> entry : currentStatuses.entrySet()) {
-                totalStatuses.merge(entry.getKey(), entry.getValue(), Long::sum);
+                Map<String, Long> currentStatuses = monthlyAggregation.getStatuses();
+                for(Map.Entry<String, Long> entry : currentStatuses.entrySet()) {
+                    totalStatuses.merge(entry.getKey(), entry.getValue(), Long::sum);
+                }
+
+                monthlyAggregation.setStatuses(new HashMap<>(totalStatuses));
             }
-
-            monthlyAggregation.setStatuses(new HashMap<>(totalStatuses));
         }
 
         return 검색결과;
