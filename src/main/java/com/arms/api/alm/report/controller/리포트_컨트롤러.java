@@ -16,9 +16,15 @@ public class 리포트_컨트롤러 {
     @Autowired
     private 리포트_서비스 리포트_서비스;
 
-    @GetMapping("/resourceList")
+    @GetMapping("/resource-list")
     public ResponseEntity<?> 작업자_목록_가져오기(Long pdServiceId, Long[] pdServiceVersions) {
 
         return ResponseEntity.ok(리포트_서비스.작업자_정보_목록_가져오기(pdServiceId, pdServiceVersions, ""));
+    }
+
+
+    @GetMapping("/issue-list")
+    public ResponseEntity<?> 이슈_목록_가져오기(Long pdServiceId) {
+        return ResponseEntity.ok(리포트_서비스.pdServiceId_조건으로_이슈_목록_가져오기(pdServiceId));
     }
 }

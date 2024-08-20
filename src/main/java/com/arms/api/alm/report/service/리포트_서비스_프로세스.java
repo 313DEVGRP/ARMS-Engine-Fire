@@ -73,7 +73,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     }
 
     @Override
-    public List<지라이슈_엔티티> pdServiceId_조건으로_지라이슈_목록_가져오기(Long pdServiceId) {
+    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(Long pdServiceId) {
 
         EsQuery esQuery = new EsQueryBuilder()
                 .bool(
