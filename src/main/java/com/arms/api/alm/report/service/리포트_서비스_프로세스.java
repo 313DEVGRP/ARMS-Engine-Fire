@@ -2,7 +2,7 @@ package com.arms.api.alm.report.service;
 
 import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.issue.base.repository.지라이슈_저장소;
-import com.arms.api.alm.report.model.FullDataDTO;
+import com.arms.api.alm.report.model.FullDataRequestDTO;
 import com.arms.api.alm.report.model.작업자_정보;
 import com.arms.egovframework.javaservice.esframework.EsQuery;
 import com.arms.egovframework.javaservice.esframework.esquery.EsQueryBuilder;
@@ -32,13 +32,12 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
 
     @Override
 //    public List<지라이슈_엔티티> 작업자_정보_목록_가져오기(
-    public List<작업자_정보> 작업자_정보_목록_가져오기(
-            Long pdServiceId, Long[] pdServiceVersions, String project_name) {
+    public List<작업자_정보> 작업자_정보_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
 
         EsQuery esQuery = new EsQueryBuilder()
                 .bool(
-                    new TermQueryMust("pdServiceId", pdServiceId),
-                    new TermsQueryFilter("pdServiceVersions", pdServiceVersions),
+                    new TermQueryMust("pdServiceId", fullDataRequestDTO.getPdServiceId()),
+                    new TermsQueryFilter("pdServiceVersions", fullDataRequestDTO.getPdServiceVersionIds()),
                     new ExistsQueryFilter("assignee")
                     // alm_project 에 관한 부분까지
                     // 설정에 따라서, 제품-버전까지, 제품-버전-프로젝트, 제품-버전-프로젝트-기간 까지
@@ -77,7 +76,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     }
 
     @Override
-    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataDTO fullDataDTO) {
+    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
 
         // new TermsQueryFilter("pdServiceId", fullDataDTO.getPdServiceLink()),
         // RangeQueryFilter.of("create_date")
