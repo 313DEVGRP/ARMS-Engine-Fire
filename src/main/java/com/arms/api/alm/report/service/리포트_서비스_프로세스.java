@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.arms.api.util.model.enums.IsReqType.isReqOrGetNull;
-
 @Slf4j
 @Service("리포트_서비스")
 @AllArgsConstructor
@@ -72,5 +70,19 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
 
 
         return 작업자_리스트;
+    }
+
+    @Override
+    public List<지라이슈_엔티티> pdServiceId_조건으로_지라이슈_목록_가져오기(Long pdServiceId) {
+
+        EsQuery esQuery = new EsQueryBuilder()
+                .bool(
+                    new TermsQueryFilter("pdServiceId", pdServiceId)
+                );
+
+        List<지라이슈_엔티티> 작업자_목록_검색_결과 =
+                지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+
+        return 작업자_목록_검색_결과;
     }
 }
