@@ -15,7 +15,7 @@ public class FullDataRequestDTO {
     private Long pdServiceId;
     private List<Long> pdServiceVersionIds;
     private List<Long> almProjectIds;
-    private Long startDate;
-    private Long endDate;
+    private String startDate;
+    private String endDate;
     private String accountId;
 }
