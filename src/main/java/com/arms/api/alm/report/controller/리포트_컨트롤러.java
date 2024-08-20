@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/engine/jira/dashboard")
+@RequestMapping("/engine/report")
 @Slf4j
 public class 리포트_컨트롤러 {
 
