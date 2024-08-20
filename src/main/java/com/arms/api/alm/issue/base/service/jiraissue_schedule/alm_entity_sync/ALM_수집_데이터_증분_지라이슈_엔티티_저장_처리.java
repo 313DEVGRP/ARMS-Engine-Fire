@@ -14,13 +14,11 @@ import static com.arms.config.ApplicationContextProvider.getBean;
 @Slf4j
 public class ALM_수집_데이터_증분_지라이슈_엔티티_저장_처리 extends ALM_수집_데이터_지라이슈_동기화_추상클래스 {
 
-	private final 지라이슈_엔티티_컬렉션 지라이슈_엔티티_저장_목록 = new 지라이슈_엔티티_컬렉션(new ArrayList<>());
-
 	private final 지라이슈_벌크_추가_요청 지라이슈_벌크_추가_요청값;
 
 	@Override
 	public List<지라이슈_엔티티> 지라이슈_앤티티_저장할_목록_가져오기(){
-		return get지라이슈_엔티티_저장_목록().get지라이슈_엔티티_목록();
+		return get지라이슈_엔티티_저장_목록();
 	}
 
 	@Override
