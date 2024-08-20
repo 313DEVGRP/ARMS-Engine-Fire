@@ -45,6 +45,13 @@ public class TermsQueryFilter extends Filter<TermsQueryBuilder> {
 		}
 	}
 
+	public TermsQueryFilter(String name, String[] value){
+		if(name!=null&&value!=null){
+			this.termsQueryBuilder = QueryBuilders.termsQuery(name
+				, Arrays.stream(value).collect(Collectors.toList()));
+		}
+	}
+
 	@Override
 	public AbstractQueryBuilder<TermsQueryBuilder> abstractQueryBuilder() {
 		return  termsQueryBuilder;

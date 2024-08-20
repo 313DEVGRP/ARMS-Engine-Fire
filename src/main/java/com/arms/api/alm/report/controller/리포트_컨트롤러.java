@@ -1,5 +1,6 @@
 package com.arms.api.alm.report.controller;
 
+import com.arms.api.alm.report.model.FullDataDTO;
 import com.arms.api.alm.report.service.리포트_서비스;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class 리포트_컨트롤러 {
 
 
     @GetMapping("/issue-list")
-    public ResponseEntity<?> 이슈_목록_가져오기(Long pdServiceId) {
-        return ResponseEntity.ok(리포트_서비스.pdServiceId_조건으로_이슈_목록_가져오기(pdServiceId));
+    public ResponseEntity<?> 이슈_목록_가져오기(FullDataDTO fullDataDTO) {
+        return ResponseEntity.ok(리포트_서비스.pdServiceId_조건으로_이슈_목록_가져오기(fullDataDTO));
     }
 }

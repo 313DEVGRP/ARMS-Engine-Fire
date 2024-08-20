@@ -2,11 +2,13 @@ package com.arms.api.alm.report.service;
 
 import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.issue.base.repository.지라이슈_저장소;
+import com.arms.api.alm.report.model.FullDataDTO;
 import com.arms.api.alm.report.model.작업자_정보;
 import com.arms.egovframework.javaservice.esframework.EsQuery;
 import com.arms.egovframework.javaservice.esframework.esquery.EsQueryBuilder;
 import com.arms.egovframework.javaservice.esframework.factory.creator.기본_쿼리_생성기;
 import com.arms.egovframework.javaservice.esframework.filter.ExistsQueryFilter;
+import com.arms.egovframework.javaservice.esframework.filter.RangeQueryFilter;
 import com.arms.egovframework.javaservice.esframework.filter.TermsQueryFilter;
 import com.arms.egovframework.javaservice.esframework.model.dto.기본_검색_요청;
 import com.arms.egovframework.javaservice.esframework.must.TermQueryMust;
@@ -14,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,11 +77,16 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     }
 
     @Override
-    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(Long pdServiceId) {
+    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataDTO fullDataDTO) {
+
+        // new TermsQueryFilter("pdServiceId", fullDataDTO.getPdServiceLink()),
+        // RangeQueryFilter.of("create_date")
+        //     .from(LocalDate.parse(fullDataDTO.getStartDate(), DateTimeFormatter.ISO_DATE))
+        //     .to(LocalDate.parse(fullDataDTO.getEndDate(), DateTimeFormatter.ISO_DATE))
 
         EsQuery esQuery = new EsQueryBuilder()
                 .bool(
-                    new TermsQueryFilter("pdServiceId", pdServiceId)
+
                 );
 
         List<지라이슈_엔티티> 작업자_목록_검색_결과 =

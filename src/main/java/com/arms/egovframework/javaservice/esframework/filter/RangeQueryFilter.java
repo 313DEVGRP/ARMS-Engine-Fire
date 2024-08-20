@@ -50,7 +50,17 @@ public class RangeQueryFilter extends Filter<RangeQueryBuilder> {
          return this;
     }
 
+    public RangeQueryFilter lt(String to){
+        this.rangeQueryBuilder.lt(to);
+        return this;
+    }
+
     public RangeQueryFilter lte(LocalDate to){
+        this.rangeQueryBuilder.lte(to);
+        return this;
+    }
+
+    public RangeQueryFilter lte(String to){
         this.rangeQueryBuilder.lte(to);
         return this;
     }
@@ -60,7 +70,17 @@ public class RangeQueryFilter extends Filter<RangeQueryBuilder> {
         return this;
     }
 
+    public RangeQueryFilter gt(String from){
+        this.rangeQueryBuilder.gt(from);
+        return this;
+    }
+
     public RangeQueryFilter gte(LocalDate from){
+        this.rangeQueryBuilder.gte(from);
+        return this;
+    }
+
+    public RangeQueryFilter gte(String from){
         this.rangeQueryBuilder.gte(from);
         return this;
     }
@@ -70,7 +90,17 @@ public class RangeQueryFilter extends Filter<RangeQueryBuilder> {
         return this;
     }
 
+    public RangeQueryFilter from(String from){
+        this.rangeQueryBuilder.from(from);
+        return this;
+    }
+
     public RangeQueryFilter to(LocalDate to){
+        this.rangeQueryBuilder.to(to);
+        return this;
+    }
+
+    public RangeQueryFilter to(String to){
         this.rangeQueryBuilder.to(to);
         return this;
     }
