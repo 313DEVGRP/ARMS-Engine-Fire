@@ -45,63 +45,95 @@ public class RangeQueryFilter extends Filter<RangeQueryBuilder> {
         return new RangeQueryFilter(name);
     }
 
-    public RangeQueryFilter lt(LocalDate to){
-         this.rangeQueryBuilder.lt(to);
-         return this;
-    }
 
-    public RangeQueryFilter lt(String to){
-        this.rangeQueryBuilder.lt(to);
+    public RangeQueryFilter lt(LocalDate lt){
+        if(lt!=null){
+            this.rangeQueryBuilder.lt(lt);
+        }
         return this;
     }
 
-    public RangeQueryFilter lte(LocalDate to){
-        this.rangeQueryBuilder.lte(to);
+    public RangeQueryFilter lt(String lt){
+        if(lt!=null){
+            this.rangeQueryBuilder.lt(lt);
+        }
         return this;
     }
 
-    public RangeQueryFilter lte(String to){
-        this.rangeQueryBuilder.lte(to);
+    public RangeQueryFilter lte(LocalDate lte){
+        if(lte!=null){
+            this.rangeQueryBuilder.lte(lte);
+        }
         return this;
     }
 
-    public RangeQueryFilter gt(LocalDate from){
-        this.rangeQueryBuilder.gt(from);
+    public RangeQueryFilter lte(String lte){
+        if(lte!=null){
+            this.rangeQueryBuilder.lte(lte);
+        }
         return this;
     }
 
-    public RangeQueryFilter gt(String from){
-        this.rangeQueryBuilder.gt(from);
+    public RangeQueryFilter gt(LocalDate gt){
+        if(gt!=null){
+            this.rangeQueryBuilder.gt(gt);
+        }
         return this;
     }
 
-    public RangeQueryFilter gte(LocalDate from){
-        this.rangeQueryBuilder.gte(from);
+    public RangeQueryFilter gt(String gt){
+        if(gt!=null){
+            this.rangeQueryBuilder.gt(gt);
+        }
         return this;
     }
 
-    public RangeQueryFilter gte(String from){
-        this.rangeQueryBuilder.gte(from);
+    public RangeQueryFilter gte(LocalDate gte){
+        if(gte!=null){
+            this.rangeQueryBuilder.gte(gte);
+        }
+        return this;
+    }
+
+    public RangeQueryFilter gte(String gte){
+        if(gte!=null){
+            this.rangeQueryBuilder.gte(gte);
+        }
         return this;
     }
 
     public RangeQueryFilter from(LocalDate from){
-        this.rangeQueryBuilder.from(from);
+        if(from!=null){
+            this.rangeQueryBuilder.from(from);
+        }
         return this;
     }
 
     public RangeQueryFilter from(String from){
-        this.rangeQueryBuilder.from(from);
+        if(from!=null){
+            this.rangeQueryBuilder.from(from);
+        }
+        if(from==null){
+            this.rangeQueryBuilder = null;
+        }
+
         return this;
     }
 
     public RangeQueryFilter to(LocalDate to){
-        this.rangeQueryBuilder.to(to);
+        if(to!=null){
+            this.rangeQueryBuilder.to(to);
+        }
         return this;
     }
 
     public RangeQueryFilter to(String to){
-        this.rangeQueryBuilder.to(to);
+        if(to!=null){
+            this.rangeQueryBuilder.to(to);
+        }
+        if(to==null){
+            this.rangeQueryBuilder = null;
+        }
         return this;
     }
 

@@ -78,19 +78,21 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     @Override
     public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
 
-        // new TermsQueryFilter("pdServiceId", fullDataDTO.getPdServiceLink()),
-        // RangeQueryFilter.of("create_date")
-        //     .from(LocalDate.parse(fullDataDTO.getStartDate(), DateTimeFormatter.ISO_DATE))
-        //     .to(LocalDate.parse(fullDataDTO.getEndDate(), DateTimeFormatter.ISO_DATE))
-
         EsQuery esQuery = new EsQueryBuilder()
-                .bool(
+            .bool(
+                new TermsQueryFilter("pdServiceId", fullDataRequestDTO.getPdServiceId()),
+                new TermsQueryFilter("pdServiceVersion", fullDataRequestDTO.getPdServiceVersionIds()),
+                new TermsQueryFilter("project.project_self", fullDataRequestDTO.getAlmProjectIds()),
+                new TermsQueryFilter("assignee.assignee_emailAddress", fullDataRequestDTO.getEmailAddress()),
+                RangeQueryFilter.of("create_date")
+                    .from(fullDataRequestDTO.getStartDate())
+                    .to(fullDataRequestDTO.getEndDate())
+            );
 
-                );
+        기본_검색_요청 기본_검색_요청 = new 기본_검색_요청();
+        기본_검색_요청.set페이지(fullDataRequestDTO.getPage());
+        기본_검색_요청.set크기(fullDataRequestDTO.getSize());
 
-        List<지라이슈_엔티티> 작업자_목록_검색_결과 =
-                지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
-
-        return 작업자_목록_검색_결과;
+        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
     }
 }

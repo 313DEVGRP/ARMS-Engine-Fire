@@ -186,6 +186,7 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
 
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder()
                 .withQuery(boolQueryBuilder)
+                .withPageable(query.getPageable())
                 .withMaxResults(Optional.ofNullable(query.getMaxResults()).orElse(0));
 
         Optional.ofNullable(query.getAggregations()).ifPresent(args-> args.forEach(nativeSearchQueryBuilder::addAggregation));
