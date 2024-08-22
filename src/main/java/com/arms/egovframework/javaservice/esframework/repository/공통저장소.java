@@ -43,6 +43,8 @@ public interface 공통저장소<T,ID extends Serializable> extends Elasticsearc
 
 	SearchHits<T> search(Query query);
 
+	SearchHits<T> recentTrueSearch(Query query);
+
 	boolean 인덱스확인_및_생성_매핑(String 인덱스명);
 
 	boolean 인덱스_존재_확인(String 인덱스명);

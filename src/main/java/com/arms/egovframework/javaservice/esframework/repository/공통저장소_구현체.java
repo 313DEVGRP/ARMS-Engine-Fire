@@ -129,6 +129,36 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
     }
 
 
+    @Override
+    public SearchHits<T> recentTrueSearch(Query query) {
+        if (query == null) {
+            log.error("Failed to build search request");
+            return null;
+        }
+
+        try{
+            ElasticSearchIndex annotation = AnnotationUtils.findAnnotation(entityClass, ElasticSearchIndex.class);
+
+            if(annotation==null){
+                return operations.search(query, entityClass);
+            }
+
+            NativeSearchQuery searchQuery = recentQueryMerge((NativeSearchQuery)query);
+
+            return operations.search(searchQuery, entityClass);
+
+        }catch (NoSuchIndexException e){
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("no such index")) {
+                return null;
+            }
+            throw e;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
     public List<SearchHit<T>> normalSearchHits(Query query) {
         if (query == null) {
             log.error("Failed to build search request");
