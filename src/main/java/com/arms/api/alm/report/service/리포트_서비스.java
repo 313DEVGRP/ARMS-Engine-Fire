@@ -1,7 +1,7 @@
 package com.arms.api.alm.report.service;
 
-import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.report.model.FullDataRequestDTO;
+import com.arms.api.alm.report.model.FullDataResponeDTO;
 import com.arms.api.alm.report.model.작업자_정보;
 
 import java.util.List;
@@ -12,5 +12,5 @@ public interface 리포트_서비스 {
     List<작업자_정보> 작업자_정보_목록_가져오기(FullDataRequestDTO fullDataRequestDTO);
     //List<지라이슈_엔티티> 작업자_정보_목록_가져오기(Long pdServiceId, Long[] pdServiceVersions, String project_name);
 
-    List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO);
+    FullDataResponeDTO pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO);
 }
