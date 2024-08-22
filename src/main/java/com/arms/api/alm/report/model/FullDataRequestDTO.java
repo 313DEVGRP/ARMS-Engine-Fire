@@ -29,4 +29,6 @@ public class FullDataRequestDTO {
 
     private String [] emailAddress;
 
+    private List<String> almProjectUrls;
+
 }
