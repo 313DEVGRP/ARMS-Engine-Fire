@@ -31,19 +31,17 @@ public interface 공통저장소<T,ID extends Serializable> extends Elasticsearc
 
 	List<T> normalRecentTrueAll();
 
-	List<T> normalSearch(Query query);
+	List<T> normalSearchList(Query query);
 
-	List<SearchHit<T>> normalSearchHits(Query query);
+	List<SearchHit<T>> normalSearchHitList(Query query);
 
 	List<SearchHit<T>> normalSearchAll(Query query);
 
-	List<T> normalSearch(Query query, String newIndex);
+	List<T> normalSearchList(Query query, String newIndex);
 
 	<S extends T> S updateSave(S entity, String indexName) ;
 
-	SearchHits<T> search(Query query);
-
-	SearchHits<T> recentTrueSearch(Query query);
+	SearchHits<T> normalSearchHits(Query query);
 
 	boolean 인덱스확인_및_생성_매핑(String 인덱스명);
 
@@ -53,7 +51,9 @@ public interface 공통저장소<T,ID extends Serializable> extends Elasticsearc
 
 	boolean 리인덱스(String 현재_인덱스, String 백업_인덱스);
 
-    Set<String> findIndexNamesByAlias(IndexCoordinates indexCoordinates);
+	SearchHits<T> searchHits(Query query);
+
+	Set<String> findIndexNamesByAlias(IndexCoordinates indexCoordinates);
 
 	boolean deleteIndex(IndexCoordinates indexCoordinates);
 

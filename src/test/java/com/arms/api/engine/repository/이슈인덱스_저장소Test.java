@@ -24,7 +24,7 @@ public class 이슈인덱스_저장소Test {
 
 		Long cReqLink = 10L;
 
-		SearchHits<지라이슈_엔티티> ids = 지라이슈_저장소.search(
+		SearchHits<지라이슈_엔티티> ids = 지라이슈_저장소.searchHits(
 			new NativeSearchQueryBuilder()
 				.withQuery(QueryBuilders.termQuery("id", "4491399083726213931_PHM_PHM-125"))
 				.build());

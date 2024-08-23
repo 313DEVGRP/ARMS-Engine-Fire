@@ -33,7 +33,7 @@ public class 서브테스크_조회 {
                 ,new TermsQueryFilter("jira_server_id",서버_아이디)
             );
 
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
     }
 
     public List<지라이슈_엔티티> 요구사항_서브테스크_검색하기(지라이슈_벌크_추가_요청 지라이슈_벌크_추가_요청값) {
@@ -49,7 +49,7 @@ public class 서브테스크_조회 {
                         ,new ExistsQueryFilter("upperKey")
                 );
 
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
     }
 
     public List<지라이슈_엔티티> 요구사항_연결이슈_검색하기 (지라이슈_벌크_추가_요청 지라이슈_벌크_추가_요청값) {
@@ -59,7 +59,7 @@ public class 서브테스크_조회 {
                 .bool(
                         new TermsQueryFilter("id",지라이슈_벌크_추가_요청값.조회조건_아이디())
                 );
-        지라이슈_엔티티 요구사항= 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, 요구사항조회_쿼리).생성()).stream()
+        지라이슈_엔티티 요구사항= 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, 요구사항조회_쿼리).생성()).stream()
                 .findFirst().orElseGet(지라이슈_엔티티::new);
 
         String[] 연결이슈_목록 = 요구사항.getLinkedIssues();
@@ -75,7 +75,7 @@ public class 서브테스크_조회 {
                         new TermsQueryFilter("id", linkedIssues)
                 );
 
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, 연결이슈조회_쿼리).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, 연결이슈조회_쿼리).생성());
     }
 
 
@@ -87,7 +87,7 @@ public class 서브테스크_조회 {
                         ,new TermsQueryFilter("jira_server_id",서버_아이디)
                 );
 
-        return 지라이슈_저장소.normalSearchHits(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+        return 지라이슈_저장소.normalSearchHitList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
     }
 
 

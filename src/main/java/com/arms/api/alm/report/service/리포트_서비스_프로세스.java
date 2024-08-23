@@ -19,8 +19,6 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,7 +43,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
                 );
 
         List<지라이슈_엔티티> 작업자_목록_검색_결과 =
-                지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+                지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
 
         // 담당자 정보 중복 제거를 위한 해시세트
         Map<String, 작업자_정보> uniqueAssignees = new HashMap<>();
@@ -93,7 +91,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
         기본_검색_요청 기본_검색_요청 = new 기본_검색_요청();
         기본_검색_요청.set페이지(fullDataRequestDTO.getPage());
         기본_검색_요청.set크기(fullDataRequestDTO.getSize());
-        SearchHits<지라이슈_엔티티> searchHits = 지라이슈_저장소.recentTrueSearch(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
+        SearchHits<지라이슈_엔티티> searchHits = 지라이슈_저장소.normalSearchHits(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
 
         FullDataResponeDTO 검색결과 = new FullDataResponeDTO();
         if (searchHits != null && searchHits.getTotalHits() != 0L) {

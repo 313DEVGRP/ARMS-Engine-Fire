@@ -31,7 +31,7 @@ public class 지라이슈_서비스_프로세스 implements 지라이슈_서비�
                 );
         기본_검색_요청 기본_검색_요청 = new 기본_검색_요청() {};
         기본_검색_요청.set크기(10000);
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class 지라이슈_서비스_프로세스 implements 지라이슈_서비�
                 );
         기본_검색_요청 기본_검색_요청 = new 기본_검색_요청() {};
         기본_검색_요청.set크기(10000);
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class 지라이슈_서비스_프로세스 implements 지라이슈_서비�
                 );
         기본_검색_요청 기본_검색_요청 = new 기본_검색_요청() {};
         기본_검색_요청.set크기(10000);
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(기본_검색_요청,esQuery).생성());
     }
 
     public 지라이슈_엔티티 이슈_조회하기(String 조회조건_아이디){
@@ -64,7 +64,7 @@ public class 지라이슈_서비스_프로세스 implements 지라이슈_서비�
             .bool(
                 new TermQueryMust("id", 조회조건_아이디)
             );
-        List<지라이슈_엔티티> 검색결과 = 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, esQuery).생성());
+        List<지라이슈_엔티티> 검색결과 = 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, esQuery).생성());
 
         if (검색결과 == null || 검색결과.isEmpty()) {
             return null;
@@ -79,7 +79,7 @@ public class 지라이슈_서비스_프로세스 implements 지라이슈_서비�
                 .bool(
                         new TermQueryMust("id", 조회조건_아이디)
                 );
-        List<SearchHit<지라이슈_엔티티>> 검색결과 = 지라이슈_저장소.normalSearchHits(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {
+        List<SearchHit<지라이슈_엔티티>> 검색결과 = 지라이슈_저장소.normalSearchHitList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {
         }, esQuery).생성());
 
         if (검색결과 == null || 검색결과.isEmpty()) {

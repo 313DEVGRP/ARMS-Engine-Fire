@@ -25,7 +25,7 @@ public class 이슈인덱스_서비스프로세스Test {
 			.withQuery(QueryBuilders.termQuery("id", "1797187033776577721_DEMO_DEMO-21"))
 			.build();
 
-		지라이슈_엔티티 지라이슈_엔티티 = 지라이슈_저장소.normalSearch(searchQuery).stream().findFirst().orElseGet(지라이슈_엔티티::new);
+		지라이슈_엔티티 지라이슈_엔티티 = 지라이슈_저장소.normalSearchList(searchQuery).stream().findFirst().orElseGet(지라이슈_엔티티::new);
 		System.out.println(지라이슈_엔티티);
 	}
 }
