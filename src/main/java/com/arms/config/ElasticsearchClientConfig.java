@@ -46,8 +46,8 @@ public class ElasticsearchClientConfig extends AbstractElasticsearchConfiguratio
 				.builder()
 				.connectedTo(this.elasticsearchUrl)
 						.withHttpClientConfigurer(clientBuilder-> clientBuilder.setKeepAliveStrategy(connectionKeepAliveStrategy()))
-				.withConnectTimeout(30000)
-				.withSocketTimeout(30000)
+				.withConnectTimeout(60000)
+				.withSocketTimeout(60000)
 				.build();
 
 		this.client = RestClients.create(clientConfiguration).rest();
