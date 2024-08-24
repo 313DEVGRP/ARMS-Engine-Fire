@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FullDataResponeDTO {
+public class FullDataResponseDTO {
 
     Long totalHits;
     List<지라이슈_엔티티> issueEntityList;

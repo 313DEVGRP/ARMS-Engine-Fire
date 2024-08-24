@@ -3,7 +3,7 @@ package com.arms.api.alm.report.service;
 import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.issue.base.repository.지라이슈_저장소;
 import com.arms.api.alm.report.model.FullDataRequestDTO;
-import com.arms.api.alm.report.model.FullDataResponeDTO;
+import com.arms.api.alm.report.model.FullDataResponseDTO;
 import com.arms.api.alm.report.model.작업자_정보;
 import com.arms.egovframework.javaservice.esframework.EsQuery;
 import com.arms.egovframework.javaservice.esframework.esquery.EsQueryBuilder;
@@ -75,7 +75,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     }
 
     @Override
-    public FullDataResponeDTO pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
+    public FullDataResponseDTO pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
 
         EsQuery esQuery = new EsQueryBuilder()
             .bool(
@@ -93,7 +93,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
         기본_검색_요청.set크기(fullDataRequestDTO.getSize());
         SearchHits<지라이슈_엔티티> searchHits = 지라이슈_저장소.normalSearchHits(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
 
-        FullDataResponeDTO 검색결과 = new FullDataResponeDTO();
+        FullDataResponseDTO 검색결과 = new FullDataResponseDTO();
         if (searchHits != null && searchHits.getTotalHits() != 0L) {
             List<지라이슈_엔티티> 이슈_엔티티_목록
                     = searchHits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
