@@ -82,7 +82,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
                 new TermsQueryFilter("pdServiceId", fullDataRequestDTO.getPdServiceId()),
                 new TermsQueryFilter("pdServiceVersion", fullDataRequestDTO.getPdServiceVersionIds()),
                 new TermsQueryFilter("project.project_self.keyword", fullDataRequestDTO.getAlmProjectUrls()),
-                new TermsQueryFilter("assignee.assignee_emailAddress", fullDataRequestDTO.getEmailAddress()),
+                new TermsQueryFilter("assignee.assignee_emailAddress.keyword", fullDataRequestDTO.getEmailAddress()),
                 RangeQueryFilter.of("created")
                     .from(fullDataRequestDTO.getStartDate())
                     .to(fullDataRequestDTO.getEndDate())
