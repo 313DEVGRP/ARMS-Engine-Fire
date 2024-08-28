@@ -3,6 +3,7 @@ package com.arms.api.alm.report.service;
 import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.issue.base.repository.지라이슈_저장소;
 import com.arms.api.alm.report.model.FullDataRequestDTO;
+import com.arms.api.alm.report.model.FullDataResponseDTO;
 import com.arms.api.alm.report.model.작업자_정보;
 import com.arms.egovframework.javaservice.esframework.EsQuery;
 import com.arms.egovframework.javaservice.esframework.esquery.EsQueryBuilder;
@@ -14,14 +15,12 @@ import com.arms.egovframework.javaservice.esframework.model.dto.기본_검색_�
 import com.arms.egovframework.javaservice.esframework.must.TermQueryMust;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("리포트_서비스")
@@ -44,7 +43,7 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
                 );
 
         List<지라이슈_엔티티> 작업자_목록_검색_결과 =
-                지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+                지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
 
         // 담당자 정보 중복 제거를 위한 해시세트
         Map<String, 작업자_정보> uniqueAssignees = new HashMap<>();
@@ -76,15 +75,15 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
     }
 
     @Override
-    public List<지라이슈_엔티티> pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
+    public FullDataResponseDTO pdServiceId_조건으로_이슈_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
 
         EsQuery esQuery = new EsQueryBuilder()
             .bool(
                 new TermsQueryFilter("pdServiceId", fullDataRequestDTO.getPdServiceId()),
                 new TermsQueryFilter("pdServiceVersion", fullDataRequestDTO.getPdServiceVersionIds()),
-                new TermsQueryFilter("project.project_self", fullDataRequestDTO.getAlmProjectIds()),
-                new TermsQueryFilter("assignee.assignee_emailAddress", fullDataRequestDTO.getEmailAddress()),
-                RangeQueryFilter.of("create_date")
+                new TermsQueryFilter("project.project_self.keyword", fullDataRequestDTO.getAlmProjectUrls()),
+                new TermsQueryFilter("assignee.assignee_emailAddress.keyword", fullDataRequestDTO.getEmailAddress()),
+                RangeQueryFilter.of("created")
                     .from(fullDataRequestDTO.getStartDate())
                     .to(fullDataRequestDTO.getEndDate())
             );
@@ -92,7 +91,20 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
         기본_검색_요청 기본_검색_요청 = new 기본_검색_요청();
         기본_검색_요청.set페이지(fullDataRequestDTO.getPage());
         기본_검색_요청.set크기(fullDataRequestDTO.getSize());
+        SearchHits<지라이슈_엔티티> searchHits = 지라이슈_저장소.normalSearchHits(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
 
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(기본_검색_요청, esQuery).생성());
+        FullDataResponseDTO 검색결과 = new FullDataResponseDTO();
+        if (searchHits != null && searchHits.getTotalHits() != 0L) {
+            List<지라이슈_엔티티> 이슈_엔티티_목록
+                    = searchHits.getSearchHits().stream().map(SearchHit::getContent).collect(Collectors.toList());
+            검색결과.setIssueEntityList(이슈_엔티티_목록);
+            검색결과.setTotalHits(searchHits.getTotalHits());
+            return 검색결과;
+        } else {
+            검색결과.setTotalHits(0L);
+            검색결과.setIssueEntityList(Collections.emptyList());
+            return 검색결과;
+        }
     }
+
 }

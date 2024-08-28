@@ -22,6 +22,8 @@ public class 이슈상태_데이터 {
 
     private String issueTypeId;
 
+    private 이슈상태_카테고리_데이터 statusCategory;
+
     public 이슈상태_데이터(String self, String id, String name) {
         this.self = self;
         this.id = id;

@@ -160,7 +160,7 @@ public class 이슈_스케쥴_서비스_프로세스 implements 이슈_스케쥴
                         new RangeQueryFilter("deleted.deleted_date", 삭제_대상일자,삭제_대상일자,"fromto"),
                         new TermsQueryFilter("deleted.deleted_isDeleted","true")
                 );
-        return 지라이슈_저장소.normalSearch(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, esQuery).생성());
+        return 지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청(){}, esQuery).생성());
     }
     @Override
     public List<SearchHit<지라이슈_엔티티>> 모든인덱스에있는_이슈_조회하기(String 조회조건_아이디) {

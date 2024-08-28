@@ -86,6 +86,20 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
             .map(SearchHit::getContent).collect(toList());
     }
 
+    public List<SearchHit<T>> normalSearchAll(Query query) {
+        try {
+            return operations.search(query, entityClass).getSearchHits();
+        } catch (NoSuchIndexException e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage != null && errorMessage.contains("no such index")) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
+            throw e;
+        } catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
     @Override
     public List<T> normalRecentTrueAll() {
 
@@ -102,71 +116,43 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
                 .map(SearchHit::getContent).collect(toList());
     }
 
-    public List<T> normalSearch(Query query) {
+    public List<T> normalSearchList(Query query) {
+        return this.normalSearchHits(query).stream()
+            .map(SearchHit::getContent).collect(toList());
+    }
+
+    public List<SearchHit<T>> normalSearchHitList(Query query) {
+        return this.normalSearchHits(query).getSearchHits();
+    }
+
+    @Override
+    public SearchHits<T> normalSearchHits(Query query) {
+
         if (query == null) {
             log.error("Failed to build search request");
-            return Collections.emptyList();
+            return null;
         }
 
-        try {
-
+        try{
             ElasticSearchIndex annotation = AnnotationUtils.findAnnotation(entityClass, ElasticSearchIndex.class);
 
             if(annotation==null){
-                return operations.search(query, entityClass).stream()
-                    .map(SearchHit::getContent).collect(toList());
+                return operations.search(query, entityClass);
             }
 
-            NativeSearchQuery searchQuery = recentQueryMerge((NativeSearchQuery)query);
+            return operations.search(recentQueryMerge((NativeSearchQuery)query), entityClass);
 
-            return operations.search(searchQuery, entityClass).stream()
-                    .map(SearchHit::getContent).collect(toList());
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return Collections.emptyList();
-        }
-    }
-
-
-    public List<SearchHit<T>> normalSearchHits(Query query) {
-        if (query == null) {
-            log.error("Failed to build search request");
-            return Collections.emptyList();
-        }
-
-        try {
-
-            ElasticSearchIndex annotation = AnnotationUtils.findAnnotation(entityClass, ElasticSearchIndex.class);
-
-            if(annotation==null){
-                return operations.search(query, entityClass).getSearchHits();
-            }
-
-            NativeSearchQuery searchQuery = recentQueryMerge((NativeSearchQuery)query);
-
-            return operations.search(searchQuery, entityClass).getSearchHits();
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return Collections.emptyList();
-        }
-    }
-
-    public List<SearchHit<T>> normalSearchAll(Query query) {
-        try {
-            return operations.search(query, entityClass).getSearchHits();
         } catch (NoSuchIndexException e) {
             String errorMessage = e.getMessage();
             if (errorMessage != null && errorMessage.contains("no such index")) {
-                return null;
+                throw new IllegalArgumentException(e.getMessage());
             }
             throw e;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw e;
+        } catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
+
 
     private NativeSearchQuery recentQueryMerge(NativeSearchQuery query) {
 
@@ -195,8 +181,9 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
 
     }
 
+
     //우선 증분처리 제외
-    public List<T> normalSearch(Query query, String newIndex) {
+    public List<T> normalSearchList(Query query, String newIndex) {
         if (query == null) {
             log.error("Failed to build search request");
             return Collections.emptyList();
@@ -208,7 +195,7 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
 
         try {
             return operations.search(query, entityClass, IndexCoordinates.of(newIndex)).stream()
-                    .map(a->a.getContent()).collect(Collectors.toList());
+                    .map(SearchHit::getContent).collect(Collectors.toList());
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -309,7 +296,7 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
                 .withQuery(QueryBuilders.matchAllQuery())
                 .withPageable(PageRequest.of(페이지, 페이지크기));
 
-            List<T> 목록 = this.normalSearch(searchQuery.build());
+            List<T> 목록 = this.normalSearchList(searchQuery.build());
 
             if (목록.isEmpty()) {
                 break;
@@ -466,7 +453,7 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
 
         return Optional.ofNullable(this.search(searchQuery)).map(searchHits ->
             searchHits.getSearchHits().stream()
-                .sorted(Comparator.comparing(a->a.getIndex(),Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(SearchHit::getIndex,Comparator.reverseOrder()))
                 .collect(groupingBy(a -> {
                     try {
                         return fieldInfo(a.getContent().getClass(), Id.class).get(a.getContent());
@@ -477,7 +464,23 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
         ).orElse(null);
     }
 
-    public SearchHits<T> search(Query query) {
+    @Override
+    public SearchHits<T> searchHits(Query query) {
+
+        try{
+            SearchHits<T> search = this.search(query);
+            if (search == null) {
+                throw new IllegalArgumentException("no such index");
+            }
+            return search;
+        }catch (Exception e){
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
+
+    private SearchHits<T> search(Query query) {
         try{
             return operations.search(query, entityClass);
         }catch (NoSuchIndexException e){
