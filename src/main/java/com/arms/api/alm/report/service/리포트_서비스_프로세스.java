@@ -5,6 +5,7 @@ import com.arms.api.alm.issue.base.repository.지라이슈_저장소;
 import com.arms.api.alm.report.model.FullDataRequestDTO;
 import com.arms.api.alm.report.model.FullDataResponseDTO;
 import com.arms.api.alm.report.model.작업자_정보;
+import com.arms.api.alm.serverinfo.service.서버정보_서비스;
 import com.arms.egovframework.javaservice.esframework.EsQuery;
 import com.arms.egovframework.javaservice.esframework.esquery.EsQueryBuilder;
 import com.arms.egovframework.javaservice.esframework.factory.creator.기본_쿼리_생성기;
@@ -12,7 +13,9 @@ import com.arms.egovframework.javaservice.esframework.filter.ExistsQueryFilter;
 import com.arms.egovframework.javaservice.esframework.filter.RangeQueryFilter;
 import com.arms.egovframework.javaservice.esframework.filter.TermsQueryFilter;
 import com.arms.egovframework.javaservice.esframework.model.dto.기본_검색_요청;
-import com.arms.egovframework.javaservice.esframework.must.TermQueryMust;
+import com.arms.egovframework.javaservice.esframework.model.dto.기본_검색_집계_하위_요청;
+import com.arms.egovframework.javaservice.esframework.model.vo.버킷_집계_결과;
+import com.arms.egovframework.javaservice.esframework.model.vo.버킷_집계_결과_목록_합계;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -22,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.arms.egovframework.javaservice.esframework.factory.creator.중첩_집계_쿼리_생성기.포괄;
+
 @Slf4j
 @Service("리포트_서비스")
 @AllArgsConstructor
@@ -29,49 +34,78 @@ public class 리포트_서비스_프로세스 implements 리포트_서비스{
 
     private 지라이슈_저장소 지라이슈_저장소;
 
+    private 서버정보_서비스 서버정보_서비스;
+
     @Override
-//    public List<지라이슈_엔티티> 작업자_정보_목록_가져오기(
-    public List<작업자_정보> 작업자_정보_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
+    public List<작업자_정보> 작업자_목록_가져오기() {
+
+        Map<String, String> 서버_연결아이디_유형_맵 = 서버정보_서비스.서버_연결아이디_유형_맵();
+
+        Arrays.asList("jira_server_id","assignee.assignee_displayName.keyword");
+
+        기본_검색_집계_하위_요청 집계_요청 = new 기본_검색_집계_하위_요청();
+        집계_요청.set메인_그룹_필드("assignee.assignee_emailAddress.keyword");
+        집계_요청.set하위_그룹_필드들(List.of("jira_server_id","assignee.assignee_displayName.keyword","assignee.assignee_accountId.keyword"));
 
         EsQuery esQuery = new EsQueryBuilder()
-                .bool(
-                    new TermQueryMust("pdServiceId", fullDataRequestDTO.getPdServiceId()),
-                    new TermsQueryFilter("pdServiceVersions", fullDataRequestDTO.getPdServiceVersionIds()),
-                    new ExistsQueryFilter("assignee")
-                    // alm_project 에 관한 부분까지
-                    // 설정에 따라서, 제품-버전까지, 제품-버전-프로젝트, 제품-버전-프로젝트-기간 까지
-                );
+                .bool( new ExistsQueryFilter("assignee") );
 
-        List<지라이슈_엔티티> 작업자_목록_검색_결과 =
-                지라이슈_저장소.normalSearchList(기본_쿼리_생성기.기본검색(new 기본_검색_요청() {}, esQuery).생성());
+        버킷_집계_결과_목록_합계 버킷집계 = 지라이슈_저장소.버킷집계(포괄(집계_요청, esQuery).생성());
+        Set<작업자_정보> 작업자_목록 = new HashSet<>();
+        if (버킷집계.get전체합계() == 0) {
+            log.info("[ 리포트_서비스_프로세스 :: 작업자_목록_가져오기 ] :: 작업자 정보가 없습니다. 사이즈 => 0");
+        } else {
 
-        // 담당자 정보 중복 제거를 위한 해시세트
-        Map<String, 작업자_정보> uniqueAssignees = new HashMap<>();
+            List<버킷_집계_결과> 이메일집계_목록 = 버킷집계.get검색결과().get("group_by_assignee.assignee_emailAddress.keyword");
+            log.info("[ 리포트_서비스_프로세스 :: 작업자_목록_가져오기 ] :: 이메일 계정 수 => {}}", 이메일집계_목록.size());
+            for (버킷_집계_결과 이메일 : 이메일집계_목록) {
 
-        for (지라이슈_엔티티 검색결과 : 작업자_목록_검색_결과 ) {
-            지라이슈_엔티티.담당자 assignee = 검색결과.getAssignee();
-            if (assignee != null) {
-                String email = assignee.getEmailAddress();
-                String accountId = assignee.getAccountId();
-                String name = assignee.getDisplayName();
-                // email 이 null 일 경우, key로 accountId로 대체
-                // redmine 에서 accountId가 "6"과 같이 중복 가능성이 있어보이므로 accountId+"-"+name 으로 처리.
-                String key = (email != null) ? email : accountId+"-"+name;
-                if (!uniqueAssignees.containsKey(key)) {
-                    작업자_정보 작업자 = new 작업자_정보(
-                            assignee.getAccountId(),
-                            email,
-                            assignee.getDisplayName()
-                    );
-                    uniqueAssignees.put(email, 작업자);
+                String 이메일_정보 = 이메일.get필드명();
+
+                if( 이메일.get하위검색결과().containsKey("group_by_jira_server_id") ) {
+                    List<버킷_집계_결과> 이메일_연동_서버연결아이디_목록 = 이메일.get하위검색결과().get("group_by_jira_server_id");
+                    if(이메일_연동_서버연결아이디_목록.isEmpty()) {
+                        log.info("[ 리포트_서비스_프로세스 :: 작업자_목록_가져오기 ] :: 해당 이메일에 연결된 서버연결아이디 없음");
+                    } else {
+                        for(버킷_집계_결과 연결아이디_이름_계정정보_객체 : 이메일_연동_서버연결아이디_목록) {
+
+                            작업자_정보 작업자 = new 작업자_정보();
+
+                            String 연결아이디 = 연결아이디_이름_계정정보_객체.get필드명();
+                            String 서버_유형 = 서버_연결아이디_유형_맵.get(연결아이디);
+
+                            String 작업자_성명 = "";
+                            String 작업자_계정 = "";
+
+                            작업자.setEmailAddress(이메일_정보);
+                            작업자.setServerType(서버_유형);
+                            // 작업자_성명
+                            if(연결아이디_이름_계정정보_객체.get하위검색결과().containsKey("group_by_assignee.assignee_displayName.keyword")) {
+                                List<버킷_집계_결과> 작업자_성명_목록 = 연결아이디_이름_계정정보_객체.get하위검색결과().get("group_by_assignee.assignee_displayName.keyword");
+                                작업자_성명 = 작업자_성명_목록.get(0).get필드명();
+                            }
+                            // 작업자_계정
+                            if(연결아이디_이름_계정정보_객체.get하위검색결과().containsKey("group_by_assignee.assignee_accountId.keyword")) {
+                                List<버킷_집계_결과> 작업자_계정_목록 = 연결아이디_이름_계정정보_객체.get하위검색결과().get("group_by_assignee.assignee_accountId.keyword");
+                                작업자_계정 = 작업자_계정_목록.get(0).get필드명();
+                            }
+
+                            작업자.setDisplayName(작업자_성명);
+                            작업자.setAccountId(작업자_계정);
+
+                            작업자_목록.add(작업자);
+                        }
+                    }
                 }
+
             }
         }
 
-        List<작업자_정보> 작업자_리스트 = new ArrayList<>(uniqueAssignees.values());
-
-
-        return 작업자_리스트;
+        if(작업자_목록.isEmpty()) {
+            return new ArrayList<>(Collections.emptyList());
+        } else {
+            return 작업자_목록.stream().collect(Collectors.toList());
+        }
     }
 
     @Override

@@ -19,9 +19,9 @@ public class 리포트_컨트롤러 {
     private 리포트_서비스 리포트_서비스;
 
     @GetMapping("/resource-list")
-    public ResponseEntity<?> 작업자_목록_가져오기(FullDataRequestDTO fullDataRequestDTO) {
+    public ResponseEntity<?> 작업자_목록_가져오기() {
 
-        return ResponseEntity.ok(리포트_서비스.작업자_정보_목록_가져오기(fullDataRequestDTO));
+        return ResponseEntity.ok(리포트_서비스.작업자_목록_가져오기());
     }
 
 
