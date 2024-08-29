@@ -361,74 +361,35 @@ public class 공통저장소_구현체<T,ID extends Serializable> extends Simple
 
     @Override
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
+        log.info("saveAll{}",entities);
+
         ElasticSearchIndex annotation = AnnotationUtils.findAnnotation(entityClass, ElasticSearchIndex.class);
+
         if(annotation==null){
             return operations.save(entities);
         }
-        Map<Object, List<SearchHit<T>>> originalEntityMap = this.originalList(entities);
+
+        RecentFieldConvertor<S> recentFieldConvertor = new RecentFieldConvertor<>(entities);
 
         List<S> recentTrueList = StreamSupport.stream(entities.spliterator(), false)
-            .map(newEntity -> {
-                try {
-                    Object keyObject = fieldInfo(newEntity.getClass(), Id.class).get(newEntity);
+                .filter(Objects::nonNull)
+                .map(recentFieldConvertor::recentTrue)
+                .filter(Objects::nonNull)
+                .collect(toList());
 
-                    if(originalEntityMap!=null&&originalEntityMap.containsKey(keyObject)){
+        Map<String, List<S>> recentFalseListIfNotEqual
+                = recentFieldConvertor.listMapGroupByIndex(recentFieldConvertor::recentFalseIfNotEqual);
 
-                        SearchHit<T> searchHit = originalEntityMap.get(keyObject)
-                            .stream()
-                            .findFirst()
-                            .orElseThrow(() -> new RuntimeException("값이 비워 있습니다."));
+        Map<String, List<S>> recentFalseForDuplicateContent
+                = recentFieldConvertor.listMapGroupByIndex(recentFieldConvertor::recentFalseForDuplicateContent);
 
-                        if(newEntity.equals(searchHit.getContent())){
-                            return null;
-                        }else{
-                            fieldInfo(newEntity.getClass(), Recent.class).setBoolean(newEntity, true);
-                            return newEntity;
-                        }
+        recentFalseListIfNotEqual
+                .forEach((key, value) -> operations.save(value, IndexCoordinates.of(key)));
 
-                    }else{
-                        fieldInfo(newEntity.getClass(), Recent.class).setBoolean(newEntity, true);
-                        return newEntity;
-                    }
+        recentFalseForDuplicateContent
+                .forEach((key, value) -> operations.save(value, IndexCoordinates.of(key)));
 
-                } catch (IllegalAccessException e) {
-                    throw new IllegalArgumentException(e);
-                }
-            })
-            .filter(Objects::nonNull)
-            .collect(toList());
-
-        Map<String, List<T>> collect = StreamSupport.stream(entities.spliterator(), false)
-            .map(newEntity -> {
-                try {
-                    Object keyObject = fieldInfo(newEntity.getClass(), Id.class).get(newEntity);
-                    return Optional.ofNullable(originalEntityMap)
-                        .map(map -> map.getOrDefault(keyObject, Collections.emptyList())
-                            .stream()
-                            .filter(hit -> !newEntity.equals(hit.getContent()))
-                            .map(hit -> {
-                                try {
-                                    fieldInfo(hit.getContent().getClass(), Recent.class).setBoolean(hit.getContent(),
-                                        false);
-                                    return hit;
-                                } catch (IllegalAccessException e) {
-                                    throw new IllegalArgumentException(e);
-                                }
-                            }).collect(toList()))
-                        .orElseGet(() -> null);
-
-                } catch (IllegalAccessException e) {
-                    throw new IllegalArgumentException(e);
-                }
-            })
-            .filter(Objects::nonNull)
-            .flatMap(Collection::stream)
-            .collect(groupingBy(SearchHit::getIndex, mapping(SearchHit::getContent, toList())));
-
-        collect
-            .forEach((key, value) -> operations.save(value, IndexCoordinates.of(key)));
-        IndexCoordinates indexCoordinates = 인덱스_명();
-        return operations.save(recentTrueList, indexCoordinates);
+        return operations.save(recentTrueList, 인덱스_명());
     }
 
 

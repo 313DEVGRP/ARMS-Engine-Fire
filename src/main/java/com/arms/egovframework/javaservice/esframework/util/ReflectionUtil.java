@@ -12,9 +12,8 @@ import static java.util.stream.Collectors.toList;
 
 public class ReflectionUtil {
 
-    private ReflectionUtil(){
+    private ReflectionUtil(){}
 
-    }
     public static <S> List<Object> fieldValues(Iterable<S> entities, Class<? extends Annotation> annotation){
         return StreamSupport.stream(entities.spliterator(), false)
                 .collect(toList())
@@ -27,6 +26,15 @@ public class ReflectionUtil {
                         throw new IllegalArgumentException(e);
                     }
                 }).collect(toList());
+    }
+
+    public static <S> Field fieldInfo(Iterable<S> entities, Class<? extends Annotation> annotation){
+         return StreamSupport.stream(entities.spliterator(), false)
+                .collect(toList())
+                .stream()
+                .filter(Objects::nonNull)
+                .findAny()
+                .map(a -> fieldInfo(a.getClass(),annotation)).orElseThrow(() -> new RuntimeException("해당 어노테이션이 지정 되어있지 않습니다."));
     }
 
     public static Method methodInfo(Class<?> entityClass, Class<? extends Annotation> annotation){
