@@ -148,6 +148,42 @@ public class 지라이슈_엔티티 {
     @Field(type = FieldType.Keyword, name = "linkedIssues")
     private String[] linkedIssues;
 
+    private 지라이슈_엔티티.암스_요구사항_속성 cReqProperty;
+
+    @Getter
+    @Setter
+    @Builder
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @EqualsAndHashCode
+    public static class 암스_요구사항_속성 {
+        @Field(type = FieldType.Long, name = "cReqPriorityLink")
+        @JsonProperty("cReqPriorityLink")
+        private Long cReqPriorityLink;
+
+        @Field(type = FieldType.Keyword, name = "cReqPriorityName")
+        @JsonProperty("cReqPriorityName")
+        private String cReqPriorityName;
+
+        @Field(type = FieldType.Long, name = "cReqDifficultyLink")
+        @JsonProperty("cReqDifficultyLink")
+        private Long cReqDifficultyLink;
+
+        @Field(type = FieldType.Keyword, name = "cReqDifficultyName")
+        @JsonProperty("cReqDifficultyName")
+        private String cReqDifficultyName;
+
+        @Field(type = FieldType.Long, name = "cReqStateLink")
+        @JsonProperty("cReqStateLink")
+        private Long cReqStateLink;
+
+        @Field(type = FieldType.Keyword, name = "cReqStateName")
+        @JsonProperty("cReqStateName")
+        private String cReqStateName;
+    }
+
     @Getter
     @Setter
     @Builder

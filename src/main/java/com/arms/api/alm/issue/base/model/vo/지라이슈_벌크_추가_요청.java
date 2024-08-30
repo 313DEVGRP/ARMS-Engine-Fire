@@ -1,5 +1,6 @@
 package com.arms.api.alm.issue.base.model.vo;
 
+import com.arms.api.alm.issue.base.model.dto.암스_요구사항_속성정보;
 import com.arms.api.alm.issue.base.model.dto.지라이슈_데이터;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,8 @@ public class 지라이슈_벌크_추가_요청 {
     private Long[] 제품서비스_버전들;//55
 
     private Long cReqLink;//172
+
+    private 암스_요구사항_속성정보 cReqProperty;
 
     public String 조회조건_아이디(){
         return 지라서버_아이디 + "_" + 프로젝트키_또는_아이디 + "_" + 이슈_키;

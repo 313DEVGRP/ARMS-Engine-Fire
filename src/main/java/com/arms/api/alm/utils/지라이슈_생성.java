@@ -1,5 +1,6 @@
 package com.arms.api.alm.utils;
 
+import com.arms.api.alm.issue.base.model.dto.암스_요구사항_속성정보;
 import com.arms.api.alm.issue.base.model.dto.지라이슈_엔티티;
 import com.arms.api.alm.issue.base.model.dto.지라이슈_데이터;
 
@@ -15,19 +16,21 @@ public class 지라이슈_생성 {
             Long 지라서버_아이디, 지라이슈_데이터 지라이슈_데이터,
             Boolean 요구사항유형_여부, String 부모_요구사항_키,
             Long 제품서비스_아이디, Long[] 제품서비스_버전들,
-            Long cReqLink
+            Long cReqLink,
+            암스_요구사항_속성정보 암스_요구사항_속성정보
     ) {
 
-        return get지라이슈_엔티티(지라서버_아이디, 지라이슈_데이터, 요구사항유형_여부, 부모_요구사항_키, 제품서비스_아이디, 제품서비스_버전들, cReqLink,null);
+        return get지라이슈_엔티티(지라서버_아이디, 지라이슈_데이터, 요구사항유형_여부, 부모_요구사항_키, 제품서비스_아이디, 제품서비스_버전들, cReqLink,null, 암스_요구사항_속성정보);
     }
 
     public static 지라이슈_엔티티 ELK_데이터로_변환(
             Long 지라서버_아이디, 지라이슈_데이터 지라이슈_데이터,
             Boolean 요구사항유형_여부, String 부모_요구사항_키,
             Long 제품서비스_아이디, Long[] 제품서비스_버전들,
-            Long cReqLink, String[] 연결이슈_아이디들
+            Long cReqLink, String[] 연결이슈_아이디들,
+            암스_요구사항_속성정보 암스_요구사항_속성정보
     ) {
-        return get지라이슈_엔티티(지라서버_아이디, 지라이슈_데이터, 요구사항유형_여부, 부모_요구사항_키, 제품서비스_아이디, 제품서비스_버전들, cReqLink,연결이슈_아이디들);
+        return get지라이슈_엔티티(지라서버_아이디, 지라이슈_데이터, 요구사항유형_여부, 부모_요구사항_키, 제품서비스_아이디, 제품서비스_버전들, cReqLink,연결이슈_아이디들, 암스_요구사항_속성정보);
     }
 
     private static 지라이슈_엔티티 get지라이슈_엔티티(
@@ -39,6 +42,7 @@ public class 지라이슈_생성 {
             , Long[] 제품서비스_버전들
             , Long cReqLink
             , String[] 연결이슈_아이디들
+            , 암스_요구사항_속성정보 암스_요구사항_속성정보
     ) {
         지라이슈_엔티티.프로젝트 프로젝트 = Optional.ofNullable(지라이슈_데이터.getFields().getProject())
                 .map(project -> 지라이슈_엔티티.프로젝트.builder()
@@ -173,6 +177,18 @@ public class 지라이슈_생성 {
 
         if(연결이슈_아이디들!=null){
             지라이슈_엔티티Builder.linkedIssues(연결이슈_아이디들);
+        }
+        if (암스_요구사항_속성정보 != null) {
+            지라이슈_엔티티.암스_요구사항_속성 cReqProperty = 지라이슈_엔티티.암스_요구사항_속성.builder()
+                    .cReqPriorityLink(암스_요구사항_속성정보.getCReqPriorityLink())
+                    .cReqPriorityName(암스_요구사항_속성정보.getCReqPriorityName())
+                    .cReqDifficultyLink(암스_요구사항_속성정보.getCReqDifficultyLink())
+                    .cReqDifficultyName(암스_요구사항_속성정보.getCReqDifficultyName())
+                    .cReqStateLink(암스_요구사항_속성정보.getCReqStateLink())
+                    .cReqStateName(암스_요구사항_속성정보.getCReqStateName())
+                    .build();
+
+            지라이슈_엔티티Builder.cReqProperty(cReqProperty);
         }
 
         지라이슈_엔티티 이슈 = 지라이슈_엔티티Builder.build();

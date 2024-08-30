@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class 암스_요구사항_속성정보 {
 
-    private Long cReqLink;
-    private Long pdServiceId;
-    private Long[] pdServiceVersions;
+//    private Long cReqLink;
+//    private Long pdServiceId;
+//    private Long[] pdServiceVersions;
     private Long cReqPriorityLink;
     private String cReqPriorityName;
     private Long cReqDifficultyLink;
