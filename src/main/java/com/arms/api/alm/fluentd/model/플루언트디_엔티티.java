@@ -2,6 +2,7 @@ package com.arms.api.alm.fluentd.model;
 
 
 import com.arms.api.util.common.constrant.index.인덱스자료;
+import com.arms.egovframework.javaservice.esframework.annotation.ElasticSearchIndex;
 import com.arms.egovframework.javaservice.esframework.annotation.RollingIndexName;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -29,6 +30,7 @@ import java.util.Date;
 @JsonTypeName("com.arms.api.engine.models.Fluentd")
 // @JsonTypeName("com.arms.api.index_entity.플루언트디_인덱스")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ElasticSearchIndex
 public class 플루언트디_엔티티 {
 
     @Id
