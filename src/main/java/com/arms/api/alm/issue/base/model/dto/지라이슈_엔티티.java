@@ -1,7 +1,7 @@
 package com.arms.api.alm.issue.base.model.dto;
 
 import com.arms.api.util.common.constrant.index.인덱스자료;
-import com.arms.egovframework.javaservice.esframework.annotation.ElasticSearchIndex;
+import com.arms.egovframework.javaservice.esframework.annotation.ElasticSearchTemplateConfig;
 import com.arms.egovframework.javaservice.esframework.annotation.Recent;
 import com.arms.egovframework.javaservice.esframework.annotation.RollingIndexName;
 import com.fasterxml.jackson.annotation.*;
@@ -28,7 +28,7 @@ import java.util.List;
 @JsonTypeName("com.arms.api.engine.models.지라이슈")
 // @JsonTypeName("om.arms.api.index_entity.이슈_인덱스")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ElasticSearchIndex
+@ElasticSearchTemplateConfig
 @EqualsAndHashCode(exclude = {"recent","timestamp"})
 public class 지라이슈_엔티티 {
 

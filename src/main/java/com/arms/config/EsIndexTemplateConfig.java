@@ -1,6 +1,7 @@
 package com.arms.config;
 
-import com.arms.egovframework.javaservice.esframework.annotation.ElasticSearchIndex;
+import com.arms.egovframework.javaservice.esframework.annotation.ElasticSearchTemplateConfig;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -33,7 +34,7 @@ public class EsIndexTemplateConfig {
 	public void run() {
 
 		Set<String> annotatedClasses
-			= this.findAnnotatedClasses(ElasticSearchIndex.class, "com.arms.*");
+			= this.findAnnotatedClasses(ElasticSearchTemplateConfig.class, "com.arms.*");
 		annotatedClasses.stream().map(clazz -> {
 				try {
 					return Class.forName(clazz);
