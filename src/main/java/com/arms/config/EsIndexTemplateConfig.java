@@ -97,8 +97,11 @@ public class EsIndexTemplateConfig {
 									.build())
 							))
 							.build();
-
-						indexOperations.putTemplate(request);
+						try{
+							indexOperations.putTemplate(request);
+						}catch (Exception e){
+							throw new RuntimeException(e);
+						}
 					}
 				}
 			});
