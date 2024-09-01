@@ -73,34 +73,36 @@ public class EsIndexTemplateConfig {
 						var mapping = indexOperations.createMapping();
 
 						try(RestHighLevelClient client = getBean(RestHighLevelClient.class)) {
+
+
+							var request = PutTemplateRequest.builder(templateName, templatePattern)
+								.withMappings(mapping)
+								.withAliasActions(new AliasActions().add(
+									new AliasAction.Add(AliasActionParameters.builderForTemplate()
+										.withAliases(indexOperations.getIndexCoordinates().getIndexNames())
+										.build())
+								))
+								.build();
+							try{
+								indexOperations.putTemplate(request);
+							}catch (Exception e){
+								log.error("템플레이트 생성에러 : {}",e.getMessage());
+							}
+
 							GetIndexResponse getIndexResponse = client.indices()
-								.get(new GetIndexRequest(document.indexName() + "*"), RequestOptions.DEFAULT);
+									.get(new GetIndexRequest(document.indexName() + "*"), RequestOptions.DEFAULT);
 
-							AliasActions add = new AliasActions().add(
-								new AliasAction.Add(AliasActionParameters.builderForTemplate()
-									.withAliases(indexOperations.getIndexCoordinates().getIndexNames())
-									.withIndices(getIndexResponse.getIndices())
-									.build())
-							);
+								AliasActions add = new AliasActions().add(
+									new AliasAction.Add(AliasActionParameters.builderForTemplate()
+										.withAliases(indexOperations.getIndexCoordinates().getIndexNames())
+										.withIndices(getIndexResponse.getIndices())
+										.build())
+								);
 
-							indexOperations.alias(add);
+								indexOperations.alias(add);
 
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-
-						var request = PutTemplateRequest.builder(templateName, templatePattern)
-							.withMappings(mapping)
-							.withAliasActions(new AliasActions().add(
-								new AliasAction.Add(AliasActionParameters.builderForTemplate()
-									.withAliases(indexOperations.getIndexCoordinates().getIndexNames())
-									.build())
-							))
-							.build();
-						try{
-							indexOperations.putTemplate(request);
-						}catch (Exception e){
-							throw new RuntimeException(e);
+						} catch (Exception e) {
+							log.error("알리아스 생성에러 : {}",e.getMessage());
 						}
 					}
 				}
